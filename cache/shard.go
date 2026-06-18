@@ -17,5 +17,5 @@ func (c ShardedCache) GetShard(key string) *CacheShard {
 	hasher.Write([]byte(key))
 	hashValue := hasher.Sum32()
 
-	return c[hashValue%ShardCount]
+	return c.shards[hashValue%c.shardCount]
 }

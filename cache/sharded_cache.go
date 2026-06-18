@@ -1,16 +1,29 @@
 package cache
 
-type ShardedCache []*CacheShard
+type ShardedCache struct {
+	shards     []*CacheShard
+	shardCount uint32
+}
 
-func NewShardedCache() ShardedCache {
-	c := make(ShardedCache, ShardCount)
+func NewShardedCache() *ShardedCache {
+	return NewShardedCacheWithCount(16)
+}
+func NewShardedCacheWithCount(count uint32) *ShardedCache {
+	if count == 0 {
+		count = 16
+	}
+
+	shards := make([]*CacheShard, count)
 
 	for i := 0; i < ShardCount; i++ {
-		c[i] = &CacheShard{
+		shards[i] = &CacheShard{
 			items: make(map[string]interface{}),
 		}
 	}
-	return c
+	return &ShardedCache{
+		shardCount: count,
+		shards:     shards,
+	}
 }
 
 func (c ShardedCache) Set(key string, value interface{}) {
