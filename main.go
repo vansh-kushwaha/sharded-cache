@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/vansh-kushwaha/sharded-cache/cache"
 )
 
 func main() {
 	myCache := cache.NewShardedCache()
+	defer myCache.Close()
 	var wg sync.WaitGroup
 
 	fmt.Println("Launching concurrent simulation tracking..")
@@ -19,7 +21,7 @@ func main() {
 			defer wg.Done()
 			k := fmt.Sprintf("session_id_%d", id)
 			v := fmt.Sprintf("payload_%d", id*100)
-			myCache.Set(k, v)
+			myCache.Set(k, v, 2*time.Second)
 		}(i)
 	}
 
